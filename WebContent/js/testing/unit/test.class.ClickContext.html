@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8' />
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen" charset="utf-8" />
+<script type="text/javascript" src="../../../lib/prototype.js"></script>
+<script type="text/javascript" src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.ClickContext.js"></script>
+<script type="text/javascript" src="../../model/class.PatternTreeElement.js"></script>
+<script type="text/javascript" src="../../model/class.AbstractClickState.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateEdit.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateValidate.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateSelect.js"></script>
+<script type="text/javascript" src="../../model/func.viewUtils.js"></script>
+
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>LUG Programming Course Unit Tests</h1>
+<p>Tests for objects and extensions written in lesson 3</p>
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<div id="xPathToString">...</div>
+<div id="exampleFrame">...</div>
+<div id="example1">...</div>
+<div id="example2">...</div>
+<div id="generalizationControl">...</div>
+<script type="text/javascript" charset="utf-8">
+
+      var SELECT_FRAME = "example1";
+      var VALIDATION_FRAME = "example2";
+      var MERGE_FRAME = "exampleFrame";
+
+new Test.Unit.Runner( {
+	
+	clickContext: Object(),
+  	
+	setup: function() { 
+	      var patternTreeElement = new PatternTreeElement(); 
+	      patternTreeElement.xPath = "/";
+        
+        this.clickContext = new ClickContext(patternTreeElement);
+	    },
+	    
+    testEditState: function() {
+    	this.clickContext.setEditState();
+    	this.assertInstanceOf(ClickStateEdit, this.clickContext.getState());
+
+    },
+    testValidateState: function() {
+    	this.clickContext.setValidateState();
+    	this.assertInstanceOf(ClickStateValidate, this.clickContext.getState());
+
+    },
+    testSelectState: function() {
+    	this.clickContext.setSelectState();
+    	this.assertInstanceOf(ClickStateSelect, this.clickContext.getState());
+
+    },
+
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8'></meta>
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen"></link>
+<script type="text/javascript"
+	src="../../../lib/prototype.js"></script>
+<script type="text/javascript"
+	src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.AbstractTypeStrategy.js"></script>
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>Abstract Type Strategy</h1>
+
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<script type="text/javascript" charset="utf-8">
+// <![CDATA[
+new Test.Unit.Runner( {
+	xPE1: Object(),
+	
+	setup: function() { with(this) {
+	      // fill me with data
+	    }},
+	
+	testTypeStrategyEnum : function() { with(this) {
+		var existingTypes = $A();
+		
+		for (var strategy in TypeStrategyEnum) {
+			assertEqual("number", typeof(TypeStrategyEnum[strategy]), "enum-value is not a number");
+			assertEqual(-1,existingTypes.indexOf(TypeStrategyEnum[strategy]), "2 enums have the same value!!!");
+			existingTypes.push(TypeStrategyEnum[strategy]);
+		}
+
+		TypeStrategyEnum["bla"] = "blub";
+		assertNull(TypeStrategyEnum["bla"], "Object not frozen");
+	  }},
+
+	testAbstractBuilder : function() { with(this) {	
+		for (var strategy in TypeStrategyEnum) {
+			assertNotNull(AbstractTypeStrategy.instanceFor(strategy));
+			assertInstanceOf(AbstractTypeStrategy, AbstractTypeStrategy.instanceFor(strategy));
+			assertInstanceOf(AbstractTypeStrategy, AbstractTypeStrategy.instanceFor(strategy));
+			assertRespondsTo("process", AbstractTypeStrategy.instanceFor(strategy));
+			assertType(String, AbstractTypeStrategy.instanceFor(strategy).process("String"));
+		}
+	  }},
+
+	testDateTypeStrategy : function() { with(this) {	
+		var dateStrategy = AbstractTypeStrategy.instanceFor(TypeStrategyEnum.DATE);
+		assertNotNull(dateStrategy);
+		assertEqual("24.12.2010", dateStrategy.process("cut of praefix 24.12.2010 cut of suffix"));
+		assertEqual("24.12 2010", dateStrategy.process("cut of praefix 24.12 2010 cut of suffix"));
+		assertEqual("24.12.10", dateStrategy.process("cut of praefix 24.12.10 cut of suffix"));
+		try {		
+			dateStrategy.process("no date at all");
+			fail("expected Exception");
+		} catch (e) {
+			pass("exception thrown correctly");
+		}
+		
+	  }},
+
+	testTimeTypeStrategy : function() { with(this) {	
+		var timeStrategy = AbstractTypeStrategy.instanceFor(TypeStrategyEnum.TIME);
+		assertNotNull(timeStrategy);
+		assertEqual("14 Uhr", timeStrategy.process("cut of praefix 14 Uhr cut of suffix")," 14 Uhr");
+		assertEqual("14:30", timeStrategy.process("cut of praefix 14:30 cut of suffix")," kein Bezeichner am Ende");
+		assertEqual("14:32 Uhr", timeStrategy.process("cut of praefix 14:32 Uhr cut of suffix"), "komplett");
+		try {		
+			timeStrategy.process("no time at all");
+			fail("expected Exception");
+		} catch (e) {
+			pass("exception thrown correctly");
+		}
+	  }},
+
+	testPriceTypeStrategy : function() { with(this) {	
+		var strategy = AbstractTypeStrategy.instanceFor(TypeStrategyEnum.PRICE);
+		assertNotNull(strategy);
+		assertEqual("3 €", strategy.process("cut of praefix Eintritt: 3 € cut of suffix"));
+		assertEqual("3,50 Euro", strategy.process("cut of praefix Eintritt: 3,50 Euro cut of suffix"));
+		assertEqual("for free", strategy.process("cut of praefix Eintritt: for free cut of suffix"));
+		try {		
+			strategy.process("no time at all");
+			fail("expected Exception");
+		} catch (e) {
+			pass("exception thrown correctly");
+		}
+	  }},
+
+	testReturnPatternMarkedOnPriceTypeStrategy : function() { with (this) {
+		var strategy = AbstractTypeStrategy.instanceFor(TypeStrategyEnum.PRICE);		
+		assertEqual("ohne Preisangabe", strategy.returnPatternMarked("ohne Preisangabe"));
+		assertEqual("c0P Eintritt: <span class=\"marked\">3 €</span> co$", strategy.returnPatternMarked("c0P Eintritt: 3 € co$"));
+	}},
+
+});
+//]]
+</script>
+</body>
+</html>

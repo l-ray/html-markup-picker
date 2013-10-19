@@ -1,0 +1,90 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8' />
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen" charset="utf-8" />
+<script type="text/javascript" charset="utf-8">
+SELECT_FRAME = "example1";
+VALIDATION_FRAME = "example2";
+MERGE_FRAME = "exampleFrame";
+</script>
+<script type="text/javascript"
+	src="../../../lib/prototype.js"></script>
+<script type="text/javascript"
+	src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElement.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElementCollection.js"></script>
+<script type="text/javascript" src="../../model/class.AbstractClickState.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateValidate.js"></script>
+<script type="text/javascript" src="../../model/func.getXPathForNode.js"></script>
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>LUG Programming Course Unit Tests</h1>
+<p>Tests for objects and extensions written in lesson 3</p>
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<script type="text/javascript" charset="utf-8">
+new Test.Unit.Runner( {
+	xPE1: Object(),
+	xPE2: Object(),
+  xPEC1: Object(),
+  xPEC2: Object(),
+	
+	setup: function() { with(this) {
+	      this.xPE1_1 = new XPathElement("test");
+	      this.xPE1_1.isClassName = false;
+	      this.xPE1_1.counter = 1;	      
+	      
+	      this.xPE1_2 = new XPathElement("toast");
+	      this.xPE1_2.className = "testKlasse";
+	      this.xPE1_2.isClassName = true;
+	      this.xPE1_2.counter = 3;
+
+	      this.xPE1_3 = new XPathElement("brei");
+	      
+	      this.xPE2_1 = new XPathElement("test");
+	      this.xPE2_1.counter = 5;
+	      this.xPE2_1.setIsCounter(false);
+	      
+
+	      this.xPE2_2 = new XPathElement("toast");
+	      this.xPE2_2.className = "testKlasse";
+	      this.xPE2_2.isClassName = true;
+	      this.xPE2_2.counter = 3;
+        
+        this.xPE2_3 = new XPathElement("font");	      
+
+        this.xPEC1 = new XPathElementCollection(new Array(this.xPE1_1,this.xPE1_2,this.xPE1_3));
+       
+        this.xPEC2 = new XPathElementCollection(new Array(this.xPE2_1,this.xPE2_2,this.xPE2_3));
+	      
+	    }},
+	
+	testMergePathes : function() { with(this) {
+    valideClick = new ClickStateValidate();
+    
+    var newPath = valideClick.mergePathes(this.xPEC1,this.xPEC2);
+    
+    assertNotNull(newPath);
+    assert("size is greater than 1", newPath.size() > 0);
+    assert("size is greater than 1", newPath.size() == 2);
+
+    assertInstanceOf(XPathElement,newPath.entries()[0]);
+    assertEqual("test", newPath.entries()[0].tagName,"1st element");
+    assert(!newPath.entries()[0].isCounter(), "1st element not counter");
+
+    assertInstanceOf(XPathElement,newPath.entries()[1]);
+    assertEqual("toast", newPath.entries()[1].tagName,"2nd element");    
+    assert(newPath.entries()[1].isCounter, "2nd element");
+    assert(newPath.entries()[1].isClassName, "classname 2nd element");
+    
+        
+
+  }},
+
+});
+</script>
+</body>
+</html>

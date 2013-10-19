@@ -1,0 +1,65 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8' />
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen" charset="utf-8" />
+<script type="text/javascript"
+	src="../../../lib/prototype.js"></script>
+<script type="text/javascript"
+	src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElement.js"></script>
+<script type="text/javascript" src="../../model/func.getXPathForNode.js"></script>
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>LUG Programming Course Unit Tests</h1>
+<p>Tests for objects and extensions written in lesson 3</p>
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<script type="text/javascript" charset="utf-8">
+new Test.Unit.Runner( {
+	xPathElement: Object(),
+	
+	setup: function() { with(this) {
+	      this.xPathElement = new XPathElement("test");
+	    }},
+	
+	testToString : function() {
+		this.assertEqual("test",this.xPathElement,"plain");
+
+		this.xPathElement.counter = 2;
+		this.assertEqual("test[2]", this.xPathElement,"mit counter");
+
+		this.xPathElement.className = "testClass";
+		this.assertEqual("test[@class='testClass'][2]", this.xPathElement,"mit className");
+    
+    this.xPathElement.setIsCounter(false);
+    this.assertEqual("test[@class='testClass']", this.xPathElement,"mit classname, ohne counter");
+    
+    this.xPathElement.setIsClassName(false);
+    this.assertEqual("test", this.xPathElement,"ohne classname");    
+
+    this.xPathElement.setIsTagName(false);
+    this.assertEqual("", this.xPathElement,"plain");    
+
+    this.xPathElement.setIdName('mahlzeit');
+    this.xPathElement.setIsTagName(true);
+    this.xPathElement.setIsIdName(true);
+    this.assertEqual("test[@id='mahlzeit']", this.xPathElement,"plain with id");
+    
+    this.xPathElement.setIsIdName(false);
+    this.xPathElement.setIsTagName(false);
+    this.assertEqual("", this.xPathElement,"plain");    
+
+  },
+    
+    testGetXPathForNode: function() {
+    	this.assertEqual(true, (new Array('hello')) instanceof Array);
+    	this.assertEqual(true, (getXPathForNode(document.getElementsByTagName('body')[0])) instanceof Array);
+    	this.assertEqual("html/body[1]",(getXPathForNode(document.getElementsByTagName('body')[0])).join("/"));    	
+    }
+});
+</script>
+</body>
+</html>

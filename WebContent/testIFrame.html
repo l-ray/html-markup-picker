@@ -1,0 +1,27 @@
+<html>
+<head><title>test fuer iFrame-injection</title></head>
+<body>
+<iframe id="iFrameTest" width="640" height="480">keine IFrame-unterstuetzung</iframe>
+<script type="text/javascript">
+
+		var iframe = document.getElementById("iframe");
+		
+		// Depending on browser platform get the iframe's document, this is only
+	   // available if the iframe has already been appended to an element which
+	   // has been added to the document
+	   if(iframe.contentDocument)
+	      // Firefox, Opera
+	      iframe.doc = iframe.contentDocument;
+	   else if(iframe.contentWindow)
+	      // Internet Explorer
+	      iframe.doc = iframe.contentWindow.document;
+	   else if(iframe.document)
+	      // Others?
+	      iframe.doc = iframe.document;
+		
+		var canvas = document.getElementsByTagName("body")[0].childNodes;
+		
+        var sourceCanvas = iframe.doc.getElementsByTagName("body")[0].childNodes;
+</script>
+</body>
+</html>

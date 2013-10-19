@@ -1,0 +1,114 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8' />
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen" charset="utf-8" />
+<script type="text/javascript" charset="utf-8">
+SELECT_FRAME = "example1";
+VALIDATION_FRAME = "example2";
+MERGE_FRAME = "exampleFrame";
+</script>
+
+<script type="text/javascript"
+	src="../../../lib/prototype.js"></script>
+<script type="text/javascript"
+	src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElement.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElementCollection.js"></script>
+<script type="text/javascript" src="../../model/func.getXPathForNode.js"></script>
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>LUG Programming Course Unit Tests</h1>
+<p>Tests for objects and extensions written in lesson 3</p>
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<script type="text/javascript" charset="utf-8">
+
+new Test.Unit.Runner( {
+	xPE1: Object(),
+	xPE2: Object(),
+	xPE3: Object(),	
+  xPE4: Object(),	
+  item: Object(),
+	
+	setup: function() { with(this) {
+	      this.xPE1 = new XPathElement("test");
+	      this.xPE1.setIsClassName(false);
+	      this.xPE1.counter = 1;	      
+	      
+	      this.xPE2 = new XPathElement("toast");
+	      this.xPE2.setIsClassName(false);
+	      this.xPE2.counter = 3;
+
+	      this.xPE3 = new XPathElement("blubb");
+	      this.xPE3.setIsClassName(false);
+	      this.xPE3.setIsCounter(false);
+	      this.xPE3.counter = 3;
+   
+          this.xPE4 = new XPathElement("moin");
+
+          this.item = new XPathElementCollection(new Array(this.xPE1,this.xPE2,this.xPE3,this.xPE4));
+          	      
+	    }},
+	
+	testGetPath : function() {
+		
+		var nullItem = new XPathElementCollection();
+     
+		this.assertNotNull(nullItem.getPath(), "empty Collection");
+		this.assertNotNull(nullItem.getPath(true),"empty Collection not root");
+		     
+		this.assertEqual("",nullItem.getPath(),"output empty collection");
+    
+		// check not null
+		this.assertNotNull(this.item.getPath());
+		this.assertNotNull(this.item.getPath(true));
+		
+		// check normal getPath
+		this.assertEqual("/test[1]/toast[3]/blubb/moin",this.item.getPath());	
+		this.assertEqual("test[1]/toast[3]/blubb/moin",this.item.getPath(true));
+		
+		// check whole in the end
+		this.xPE4.setIsTagName(false);
+		this.assertEqual("/test[1]/toast[3]/blubb",this.item.getPath(),"check whole in the end");
+		this.xPE4.setIsTagName(true);
+
+		//check ID in beginning
+		this.xPE1.idName = "toelke";
+		this.xPE1.setIsIdName(true);
+		this.assertEqual("//test[@id='toelke']/toast[3]/blubb/moin",this.item.getPath(),"check ID in beginning");
+    		this.xPE1.setIsIdName(false);
+    
+    		//check whole in the beginning
+ 		this.xPE1.setIsTagName(false);
+ 		this.xPE1.setIsIdName(true);
+		this.assertEqual("//toast[3]/blubb/moin",this.item.getPath(),"check whole in beginning with id");
+		this.xPE1.setIsIdName(false);
+		this.assertEqual("//toast[3]/blubb/moin",this.item.getPath(),"check whole in beginning without ID");
+		this.xPE1.setIsTagName(true);
+
+		// check whole in the middle
+		this.xPE2.setIsTagName(false);
+		this.assertEqual("/test[1]//blubb/moin",this.item.getPath(),"check whole in the middle");
+		this.xPE3.setIsTagName(false);
+		this.assertEqual("/test[1]//moin",this.item.getPath(),"check big whole in the middle");
+	
+		this.xPE4.setIsTagName(false);
+		this.assertEqual("/test[1]",this.item.getPath(),"check big whole up to the end");
+	},
+
+	testMarkinternalTags : function() { with (this) {
+		
+		assert(XPathElementCollection.internalTagIDs.size() > 0, "Can not check internal tags when there aren't any");
+		this.item.push(new XPathElement("testTag",XPathElementCollection.internalTagIDs[0]));
+		assertEqual(5,this.item.size());
+		assert(this.item.elements.pop().isInternalTag());
+		assert(this.item.find(function(s) { return s.isInternalTag();}) == undefined);     
+	}}
+    
+});
+</script>
+</body>
+</html>

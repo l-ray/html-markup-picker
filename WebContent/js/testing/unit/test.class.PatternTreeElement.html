@@ -1,0 +1,183 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv="Content-Type" content='text/html; charset=UTF-8' ></meta>
+<link rel="stylesheet" href="../styles/test.css" type="text/css" media="screen" ></link>
+
+<script type="text/javascript" charset="utf-8">
+SELECT_FRAME = "example1";
+VALIDATION_FRAME = "example2";
+MERGE_FRAME = "exampleFrame";
+</script>
+
+<script type="text/javascript" src="../../../lib/prototype.js"></script>
+<script type="text/javascript" src="../../../lib/scriptaculous/unittest.js"></script>
+<script type="text/javascript" src="../../model/class.PatternTreeElement.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElementCollection.js"></script>
+<script type="text/javascript" src="../../model/class.XPathElement.js"></script>
+<script type="text/javascript" src="../../model/class.ClickContext.js"></script>
+<script type="text/javascript" src="../../model/class.AbstractClickState.js"></script>
+<script type="text/javascript" src="../../model/class.AbstractTypeStrategy.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateEdit.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateSelect.js"></script>
+<script type="text/javascript" src="../../model/class.ClickStateValidate.js"></script>
+
+<title>lr_mediator</title>
+</head>
+<body>
+<h1>LUG Programming Course Unit Tests</h1>
+<p>Tests for objects and extensions written in lesson 3</p>
+<!-- Test Log output -->
+<div id="testlog">...</div>
+<script type="text/javascript" charset="utf-8">
+//<![CDATA[
+new Test.Unit.Runner( {
+	patternTreeElement: Object(),
+	
+	setup: function() { 
+	      this.patternTreeElement = new PatternTreeElement();
+	      this.patternTreeElement.setName("ROOT");
+      	this.patternTreeElement.setType(TypeStrategyEnum.CONTAINER);
+      	this.patternTreeElement.setDocument(document);
+      	
+      	var clickContext = new ClickContext(this.patternTreeElement);
+      	this.patternTreeElement.setContext(clickContext);
+	    },
+	    
+    testPrimitives: function() {
+    	this.patternTreeElement.setName("testName");
+    	this.assertEqual("testName", this.patternTreeElement.getName());
+    	this.patternTreeElement.setXPathCollection(new XPathElementCollection(new XPathElement("test")));
+    	this.assertEqual("/test", this.patternTreeElement.getXPath());
+    },
+
+	testEnumerable:function() { with (this) {
+		this.assertEqual(0,this.patternTreeElement.size());
+		var demoPatternTreeElement = new PatternTreeElement("bla");
+		var demoPatternTreeElement2 = new PatternTreeElement("blaeng");		
+		patternTreeElement.push(demoPatternTreeElement2);
+		patternTreeElement.push(demoPatternTreeElement);
+		assertEqual(2,patternTreeElement.size());
+		assertNotNull((patternTreeElement.toArray().without(demoPatternTreeElement)));
+		assertEqual(1,(patternTreeElement.toArray().without(demoPatternTreeElement)).size());
+		assertNotNull(patternTreeElement.toArray().without(demoPatternTreeElement,demoPatternTreeElement2));
+		assertEqual(0,patternTreeElement.toArray().without(demoPatternTreeElement, demoPatternTreeElement2).size());
+	}},
+
+  testGetFullXPath:function(){ with(this) {
+      var dummyCol = new XPathElementCollection(new XPathElement("test"));
+      this.patternTreeElement.setXPathCollection(dummyCol);
+    	this.assertEqual("/test", this.patternTreeElement.getFullXPath());
+
+      var dummyPTE = new PatternTreeElement();
+      dummyPTE.setContext(this.patternTreeElement.getContext());
+      dummyPTE.setXPathCollection(new XPathElementCollection(new XPathElement("morning")));
+      
+      this.patternTreeElement.setParent(dummyPTE);
+      
+      assertEqual("/morning/test", this.patternTreeElement.getFullXPath());
+      
+  }},
+  
+  testGetFullXPathWithMinimizedParentPath:function(){ with(this) {
+      
+      var dummy_xpe1 = new XPathElement("moin");
+      var dummy_xpe2 = new XPathElement("lieber");
+      
+      this.patternTreeElement.setXPathCollection(new XPathElementCollection(new XPathElement("test")));
+
+      var dummyPTE = new PatternTreeElement();
+      dummyPTE.setContext(this.patternTreeElement.getContext());
+      dummyPTE.setXPathCollection(new XPathElementCollection(dummy_xpe1, dummy_xpe2));
+      
+      this.patternTreeElement.setParent(dummyPTE);
+      
+      assertEqual("/moin/lieber/test", this.patternTreeElement.getFullXPath());
+      dummy_xpe2.setIsTagName(false);
+      assertEqual("/moin//test", this.patternTreeElement.getFullXPath());
+      
+  }},   
+
+  testGetFullXPathWithFirstIdElementInSecondPath:function(){ with(this) {
+      
+	// <moin id="bla"/> mit ignoriertem Tag
+      var dummy_xpe1 = new XPathElement("moin");
+      dummy_xpe1.setIdName("bla");
+      dummy_xpe1.setIsIdName(false);
+      dummy_xpe1.setIsTagName(false);
+      
+	// <lieber>
+      var dummy_xpe2 = new XPathElement("lieber");
+      
+	// <test>
+      this.patternTreeElement.setXPathCollection(new XPathElementCollection(new XPathElement("test")));
+
+      var dummyPTE = new PatternTreeElement();
+      dummyPTE.setContext(this.patternTreeElement.getContext());
+	// <moin id="bla"><lieber/></moin> bzw. /moin/lieber
+      dummyPTE.setXPathCollection(new XPathElementCollection(dummy_xpe1, dummy_xpe2));
+	// /test
+      dummyPTE.setParent(this.patternTreeElement);
+      
+      assertEqual("/test//lieber", dummyPTE.getFullXPath());
+     
+  }},
+
+  testGetFullXPathAsThreesome:function(){ with(this) {
+      
+      var dummy_xpe1 = new XPathElement("moin");
+      dummy_xpe1.setIdName("bla");
+      dummy_xpe1.setIsIdName(false);
+      dummy_xpe1.setIsTagName(false);
+      
+      var dummy_xpe2 = new XPathElement("lieber");
+      
+      var dummy_xpe3 = new XPathElement("typ");
+      dummy_xpe3.setIsTagName(false);
+      
+      this.patternTreeElement.setXPathCollection(new XPathElementCollection(new XPathElement("html"),new XPathElement("body")));
+
+      var dummyPTE = new PatternTreeElement();
+      dummyPTE.setContext(this.patternTreeElement.getContext());
+      dummyPTE.setXPathCollection(new XPathElementCollection(dummy_xpe1, dummy_xpe2, dummy_xpe3));
+      
+      dummyPTE.setParent(this.patternTreeElement);
+      
+      var dummyPTE2 = new PatternTreeElement();
+      dummyPTE2.setContext(dummyPTE.getContext());
+      dummyPTE2.setXPathCollection(new XPathElementCollection(dummy_xpe1, dummy_xpe2));
+      
+      dummyPTE2.setParent(dummyPTE);
+      
+      assertEqual("/html/body//lieber//lieber", dummyPTE2.getFullXPath());
+  
+  }},
+
+	testToJSON:function() { with (this) {
+		patternTreeElement.setColor(1);
+		patternTreeElement.setXPathCollection(new XPathElementCollection(new XPathElement("html"),new XPathElement("body")));
+
+		assertType(Function,patternTreeElement.toJSON,"checking that variable is a function");
+		assertNotNull(patternTreeElement.toJSON(),"function returns non-null-result");
+		assertEqual("ROOT",patternTreeElement.toJSON().evalJSON(true).name,"checking name");
+		assertEqual(1,patternTreeElement.toJSON().evalJSON(true).color,"checking color");
+		// Double-Check, if Slash is needed in front
+		assertEqual("html/body",patternTreeElement.toJSON().evalJSON(true).xPath,"checking xpath");
+		assertEqual(TypeStrategyEnum.CONTAINER,patternTreeElement.toJSON().evalJSON(true).type, "checking type");
+		assertNull(patternTreeElement.toJSON().evalJSON(true).children,"checking type of sub-elements");
+
+		var demoPatternTreeElement = new PatternTreeElement("bla");
+		var demoPatternTreeElement2 = new PatternTreeElement("blaeng");		
+		patternTreeElement.push(demoPatternTreeElement);
+		patternTreeElement.push(demoPatternTreeElement2);
+
+		assertEqual(2,patternTreeElement.toJSON().evalJSON(true).children.size(), "checking number of sub-elements after push");
+		assertEqual("bla",patternTreeElement.toJSON().evalJSON(true).children[0].name, "checking name of first child");
+		assertEqual("blaeng",patternTreeElement.toJSON().evalJSON(true).children[1].name, "checking name of first child");
+		
+	}},
+
+});
+//]]
+</script>
+</body>
+</html>
